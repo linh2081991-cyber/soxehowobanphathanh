@@ -685,7 +685,7 @@
   .resp-badge.split{ background:var(--warn-soft); color:var(--warn-text); }
   .resp-badge.owner_full{ background:var(--accent-soft); color:var(--accent); }
 
-  /* Thanh chọn Xe / LINH CHÍ THÀNH — nằm ngay dưới header, bấm vào để mở
+  /* Thanh chọn Xe / CÔNG TY — nằm ngay dưới header, bấm vào để mở
      danh sách xe (yêu cầu Ông Chủ 2026-08-14/15, làm nổi bật + đẹp hơn
      theo yêu cầu). Nền cam nhạt nổi bật, chữ đậm, có icon + nút "Đổi xe"
      rõ ràng thay vì 1 dòng chữ mờ nhạt như trước. */
@@ -941,7 +941,7 @@ function defaultCostPolicies(){
 /// key) — mọi field settings KHÁC đều riêng theo từng xe (khấu hao, vay
 /// ngân hàng, bảo hiểm, đăng kiểm, lương cứng...), theo đúng yêu cầu Ông
 /// Chủ 2026-08-14: "thêm xe nào thêm tiền xe đó... tiền ngân hàng, khấu
-/// hao... chưa nhập thì không thể lấy số bên xe 29E69112".
+/// hao... chưa nhập thì không thể lấy số bên xe xe số 1".
 const SHARED_SETTINGS_FIELDS = ['geminiApiKey','currentFuelUnitPrice','vatRatePercent','citRatePercent','lotPriceOverrides','invoiceRefPriceByGoods','invoiceStockAlertDays','vatFilingPeriod','companyProfile','appMode']; // #323 · #376 kỳ khai VAT · Bước 1 chế độ app
 function defaultSettingsShape(){
   return { standardWorkDaysPerMonth: 28, costPolicies: defaultCostPolicies(),
@@ -1001,7 +1001,7 @@ function migrateBankLoanToBankLoans(){
 
 let state = {
   // Quản lý nhiều xe (Giai đoạn 1, 2026-08-14) — currentVehicleId=null
-  // nghĩa là đang ở chế độ "LINH CHÍ THÀNH (Toàn Công Ty)" (mặc định khi mở app).
+  // nghĩa là đang ở chế độ "CÔNG TY (Toàn Công Ty)" (mặc định khi mở app).
   // Xe #1 (isPrimary:true) LUÔN đọc/ghi đúng các document Firestore GỐC
   // (drivers/shifts/settings, không hậu tố) — KHÔNG di trú dữ liệu cũ
   // sang đường dẫn khác, để tuyệt đối không có rủi ro mất/lệch số liệu
@@ -1084,7 +1084,7 @@ let state = {
   // Dự Án (Ông Chủ tự điền, dùng làm mốc "từ ngày nào" để cộng dồn Lợi
   // Nhuận Luỹ Kế — nếu để trống, app tự lấy ngày ca đầu tiên đã ghi).
   equityProjectInfo: { initialInvestment: 0, startDate: null, registeredCharterCapital: 0, charterCapitalDeadline: null },
-  // Bấm "🏢 LINH CHÍ THÀNH" ở header mở trang này TOÀN MÀN HÌNH (không
+  // Bấm "🏢 CÔNG TY" ở header mở trang này TOÀN MÀN HÌNH (không
   // phải modal nhỏ) — yêu cầu Ông Chủ 2026-08-15: "1 trang làm việc đàng
   // hoàng, chi tiết đầy đủ". Bấm bất kỳ tab nào ở thanh dưới cùng sẽ tự
   // tắt cờ này (xem wiring nav.tabbar).
@@ -2071,7 +2071,7 @@ async function saveVehicles(){
 /// KHÔNG động tới dữ liệu ca/tài xế/sửa chữa... đã lỡ lưu riêng cho xe đó
 /// trên Firestore (nếu có) — an toàn tuyệt đối, tránh xoá nhầm dữ liệu
 /// thật chỉ vì thao tác xoá xe khỏi danh sách. Nếu đang xem đúng xe bị
-/// xoá, tự động chuyển về chế độ Tổng Linh Chí Thành.
+/// xoá, tự động chuyển về chế độ Tổng Công Ty.
 function renderDeleteVehicleConfirmModal(vehicleId, vehicleName){
   openModal(`
     <div class="modal-close-row"><button class="btn btn-ghost btn-sm" id="modalCloseBtn">Đóng ✕</button></div>
@@ -2236,7 +2236,7 @@ async function switchVehicle(vid){
   closeModal();
   updateVehicleScopeBar();
   // Chỉ 1 xe (chưa thêm xe khác) → activeVehicleIdForEditing() tự quy về
-  // đúng Xe #1 dù nhãn đang hiện LINH CHÍ THÀNH — tải lại vẫn ra đúng dữ
+  // đúng Xe #1 dù nhãn đang hiện CÔNG TY — tải lại vẫn ra đúng dữ
   // liệu Xe #1 y hệt cũ, không có gì đổi. Có ≥2 xe mà đang ở LINH CHÍ
   // THÀNH → không tải xe nào cả (chưa xây màn tổng hợp), Ca Làm Việc/Tài
   // Xế sẽ tự hiện lời nhắc chọn xe.
@@ -2247,7 +2247,7 @@ async function switchVehicle(vid){
   const label = vid===null ? `${companyShort().toUpperCase()}` : ((state.vehicles.find(v=>v.id===vid)||{}).name||'');
   showToast(`Đang xem: ${label}`);
 }
-/// SỬA 2026-09-08 (Ông Chủ yêu cầu bỏ hẳn thanh "LINH CHÍ THÀNH/Đổi xe"
+/// SỬA 2026-09-08 (Ông Chủ yêu cầu bỏ hẳn thanh "CÔNG TY/Đổi xe"
 /// cũ — dồn 2 chức năng đó vào sơ đồ cây ở renderChooseVehiclePrompt()).
 /// NHƯNG khi đang xem SÂU vào 1 xe cụ thể (trong lúc có ≥2 xe), sơ đồ cây
 /// đó không hiện ra nữa (nó chỉ hiện khi CHƯA chọn xe nào) — nếu không
@@ -2255,7 +2255,7 @@ async function switchVehicle(vid){
 /// đường thoát (đúng lỗi Ông Chủ báo ở Ảnh 1). Giữ lại ĐÚNG 1 nút nhỏ
 /// "← Quay Lại Chọn Xe" — CHỈ hiện khi có ≥2 xe VÀ đang xem đúng 1 xe cụ
 /// thể (không hiện khi chỉ có 1 xe, cũng không hiện khi đã ở chế độ Tổng
-/// Linh Chí Thành) — không phục hồi lại nhãn "LINH CHÍ THÀNH"/"Đổi xe ▾"
+/// Công Ty) — không phục hồi lại nhãn "CÔNG TY"/"Đổi xe ▾"
 /// cũ như Ông Chủ đã yêu cầu bỏ.
 function updateVehicleScopeBar(){
   const bar = document.getElementById('vehicleScopeBar');
@@ -2285,11 +2285,11 @@ function vehicleDataRef(vehicleId, name){
 /// Xe nào đang THỰC SỰ được sửa/lưu dữ liệu (Ca Làm Việc/Tài Xế) — khác
 /// với state.currentVehicleId (chỉ là NHÃN đang xem):
 ///  - Đang chọn đúng 1 xe cụ thể → dùng luôn xe đó.
-///  - Đang ở LINH CHÍ THÀNH (currentVehicleId=null) NHƯNG cả hệ thống chỉ
+///  - Đang ở CÔNG TY (currentVehicleId=null) NHƯNG cả hệ thống chỉ
 ///    có đúng 1 xe (chưa thêm xe nào khác) → tự động dùng xe đó, để mọi
 ///    hành vi y hệt hôm qua, không có gì phải hỏi thêm — đúng yêu cầu
-///    "không được động vào dữ liệu xe 29E69112 đang có".
-///  - Đang ở LINH CHÍ THÀNH mà có ≥2 xe → trả về null (mập mờ, chưa biết
+///    "không được động vào dữ liệu xe xe số 1 đang có".
+///  - Đang ở CÔNG TY mà có ≥2 xe → trả về null (mập mờ, chưa biết
 ///    lưu cho xe nào) — màn Ca Làm Việc/Tài Xế sẽ tự hiện lời nhắc chọn
 ///    xe cụ thể, không tự đoán bừa.
 function activeVehicleIdForEditing(){
@@ -2535,7 +2535,7 @@ async function bulkTickInvoiceAcrossAllVehicles({ from, to, partyField, partyId,
 /// saveRoadFeeByMonth()/saveSettings()/loadVehicleWorkingSet() tự đồng bộ
 /// lại đúng 1 xe mỗi khi có thay đổi, nên không cần gọi lại hàm này
 /// thường xuyên. Mở rộng thêm repairs/roadFee/settings (yêu cầu Ông Chủ
-/// 2026-08-15: Dòng Tiền Thuần ở chế độ LINH CHÍ THÀNH cần gộp đủ chi phí
+/// 2026-08-15: Dòng Tiền Thuần ở chế độ CÔNG TY cần gộp đủ chi phí
 /// vận hành/cố định của TẤT CẢ xe, không chỉ xe đang xem).
 /// SỬA 2026-09-08 LẦN 6 (Ông Chủ yêu cầu audit toàn app khi thêm xe —
 /// TÌM RA GỐC RỄ THẬT SỰ của lỗi "Chi phí mua hoá đơn bù ra 0đ" ở trên):
@@ -4433,12 +4433,12 @@ function allShiftsForLedgerCompanyWide(){
   }
   return list;
 }
-// ================= 2026-08-15: DÒNG TIỀN THUẦN Ở CHẾ ĐỘ LINH CHÍ THÀNH =================
+// ================= 2026-08-15: DÒNG TIỀN THUẦN Ở CHẾ ĐỘ CÔNG TY =================
 // Tiền khách bank vào / Tiền bank cho mỏ vốn ĐÃ dùng chung toàn công ty từ
 // trước (state.sitePayments/state.supplierPayments không tách theo xe) —
 // không cần hàm riêng. 4 hàm dưới đây gộp đúng phần còn lại (chi phí vận
 // hành + sửa chữa + luật đường + cố định) của TẤT CẢ xe, để "Dòng Tiền
-// Thuần" ở LINH CHÍ THÀNH không còn bị trộn nhầm chi phí của 1 xe với
+// Thuần" ở CÔNG TY không còn bị trộn nhầm chi phí của 1 xe với
 // tiền mặt của cả công ty như trước.
 /// Y HỆT repairsInRange() (dòng ~7096) nhưng gộp Sửa Chữa của TẤT CẢ xe.
 function repairsInRangeCompanyWide(from, to){
@@ -4922,7 +4922,7 @@ function computeCumulativeAccrualProfit(toOverride, fromOverride){
     driverBonusCost, driverExpenseReportCost, repairDriverRecovery, saleGain };
 }
 /// SỬA 2026-09-08 (yêu cầu Ông Chủ — chuẩn bị thêm xe: "Kết quả trong
-/// Linh Chí Thành lập bảng từng xe, sau đó hiện bảng cộng tổng"): bản
+/// Công Ty lập bảng từng xe, sau đó hiện bảng cộng tổng"): bản
 /// TÁCH RIÊNG 1 XE của computeCumulativeAccrualProfit() ở trên — CHỈ
 /// gồm những khoản THẬT SỰ thuộc riêng xe đó (doanh thu, vận hành biến
 /// đổi, hoá đơn bù, sửa chữa, luật đường, khấu hao+lãi vay+bảo hiểm+đăng
@@ -5311,7 +5311,7 @@ function monthLabelVN(ym){
   return `${Number(m)}/${y}`;
 }
 /// SỬA 2026-09-08 (yêu cầu Ông Chủ — "nút thêm ở Cài Đặt, dữ liệu hiển
-/// thị ở Linh Chí Thành, mỗi dòng tự lưu riêng"): modal Thêm/Sửa DÙNG
+/// thị ở Công Ty, mỗi dòng tự lưu riêng"): modal Thêm/Sửa DÙNG
 /// CHUNG cho Tiền Luật Đường & CP Cầu Đường Theo Tháng — cả 2 đều ĐÚNG 1
 /// ô số tiền/tháng, chỉ khác mảng dữ liệu + hàm lưu. kind: 'roadFee' |
 /// 'tollFee'. Lưu/Xoá xong gọi ĐÚNG saveFn riêng của loại đó ngay lập
@@ -5437,7 +5437,7 @@ function openHousingUtilEditor(id, presetMonth){
     afterWrite('Đã xoá.');
   });
 }
-/// 3 bảng grid-table hiển thị trong Linh Chí Thành — gọi từ
+/// 3 bảng grid-table hiển thị trong Công Ty — gọi từ
 /// renderCompanyDashboardPage(). Đọc thẳng state, không tính lại gì.
 function renderRoadFeeMonthTable(){
   const wrap = document.getElementById('roadFeeMonthListWrap');
@@ -5711,7 +5711,7 @@ async function saveSettings(){
 // trùng với chỗ chỉnh nhanh VAT ở trang Thẩm Định Công Trình). Chuyển hẳn
 // sang Cài Đặt — và lưu THẲNG vào companySettings, KHÔNG gọi saveSettings()
 // (hàm đó còn ghi cả vào document RIÊNG của xe đang xem qua
-// activeVehicleIdForEditing(), nên nếu gọi lúc đang ở "🏢 Linh Chí Thành"
+// activeVehicleIdForEditing(), nên nếu gọi lúc đang ở "🏢 Công Ty"
 // chưa chọn xe cụ thể sẽ có rủi ro ghi nhầm vào đúng xe #1) — tách hẳn ra
 // để chỉnh Thuế Suất ở bất kỳ đâu cũng an toàn tuyệt đối, không đụng tới
 // dữ liệu riêng của bất kỳ xe nào.
@@ -5957,6 +5957,8 @@ async function exportBackupFile(){
     const snap = await withTimeout(db.collection('shared').doc(SHARED_SPACE_ID).collection('appdata').get());
     allDocs = {};
     snap.forEach(doc=>{ allDocs[doc.id] = doc.data(); });
+    // SỬA 2026-11-27: không ghi Gemini API Key vào file sao lưu (file hay được gửi qua Zalo/Email).
+    Object.values(allDocs).forEach(d=>{ if(d && typeof d==='object' && 'geminiApiKey' in d) d.geminiApiKey = ''; });
   } catch(e) {
     showToast('Sao lưu thất bại — không đọc được dữ liệu từ máy chủ (kiểm tra mạng rồi thử lại): ' + (e?.message || e));
     return;
@@ -5979,7 +5981,7 @@ async function exportBackupFile(){
     tollFeeByMonth: state.tollFeeByMonth,
     driverAdvances: state.driverAdvances,
     driverExpenseReports: state.driverExpenseReports,
-    settings: state.settings
+    settings: Object.assign({}, state.settings, { geminiApiKey: '' })
   };
   const json = JSON.stringify(backup, null, 2);
   const blob = new Blob([json], {type:'application/json'});
@@ -6007,6 +6009,8 @@ async function handleRestoreFile(file){
       const msg5 = `File sao lưu đầy đủ (mọi xe) gồm ${names.length} mục dữ liệu, xuất lúc ${new Date(backup.exportedAt).toLocaleString('vi-VN')}.\n\nPhục hồi sẽ ghi đè toàn bộ dữ liệu hiện tại của công ty bằng dữ liệu trong file. ${ownerTitle()} chắc chắn muốn phục hồi?`;
       if(!confirm(msg5)) return;
       const col = db.collection('shared').doc(SHARED_SPACE_ID).collection('appdata');
+      const _curKey = (state.settings && state.settings.geminiApiKey) || '';
+      if(_curKey) names.forEach(n=>{ const d = backup.allDocs[n]; if(d && typeof d==='object' && ('geminiApiKey' in d) && !d.geminiApiKey) d.geminiApiKey = _curKey; });
       const results = await Promise.all(names.map(async name=>{
         try { await withTimeout(col.doc(name).set(backup.allDocs[name])); return true; }
         catch(e){ return false; }
@@ -6039,7 +6043,7 @@ async function handleRestoreFile(file){
     state.tollFeeByMonth = Array.isArray(backup.tollFeeByMonth) ? backup.tollFeeByMonth : [];
     state.driverAdvances = Array.isArray(backup.driverAdvances) ? backup.driverAdvances : [];
     state.driverExpenseReports = Array.isArray(backup.driverExpenseReports) ? backup.driverExpenseReports : [];
-    if(backup.settings) state.settings = Object.assign(state.settings, backup.settings);
+    if(backup.settings){ if(!backup.settings.geminiApiKey) delete backup.settings.geminiApiKey; state.settings = Object.assign(state.settings, backup.settings); }
     migrateBankLoanToBankLoans();
     const results = await Promise.all([
       saveDrivers(), saveShifts(), saveRepairs(), saveSitePayments(),
@@ -7851,7 +7855,7 @@ function renderWarehouseDrawHistoryPage(goodsType, from, to){
 
 /// Modal quản lý Khách Hàng — thêm/sửa/xoá, mirror y hệt Nhà Cung Cấp.
 /// holdbackPercent (2026-08-16, yêu cầu Ông Chủ): khách này giữ lại ĐÚNG %
-/// này của MỖI hoá đơn cho tới khi Linh Chí Thành xuất đủ hoá đơn mới trả
+/// này của MỖI hoá đơn cho tới khi Công Ty xuất đủ hoá đơn mới trả
 /// nốt — đây là thực tế kinh doanh THẬT, không còn là ghi chú suông. Dùng
 /// để ước tính "đang giữ hợp lệ chờ hoá đơn" hiển thị TÁCH RIÊNG cạnh CÒN
 /// NỢ (xem openCustomerDetail) — giúp phân biệt phần nợ CẦN ĐÒI GẤP với
@@ -10366,15 +10370,15 @@ function driverAvatarIcon(){
     <path d="M19 36.5l5 4.5 5-4.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   </svg>`;
 }
-/// Màn nhắc chọn xe — chỉ hiện khi đang ở LINH CHÍ THÀNH (Toàn Công Ty)
+/// Màn nhắc chọn xe — chỉ hiện khi đang ở CÔNG TY (Toàn Công Ty)
 /// MÀ có từ 2 xe trở lên (activeVehicleIdForEditing() trả về null), vì
 /// Ca Làm Việc/Tài Xế bắt buộc phải rõ đang thao tác đúng xe nào mới lưu
 /// đúng chỗ. Với đúng 1 xe (hiện tại) hàm này sẽ không bao giờ hiện ra.
-/// SỬA 2026-09-08 LẦN 2 (yêu cầu Ông Chủ — "bỏ khu vực Linh Chí Thành và
-/// nút đổi xe, mọi dữ liệu Linh Chí Thành cho vào nút Linh Chí Thành
+/// SỬA 2026-09-08 LẦN 2 (yêu cầu Ông Chủ — "bỏ khu vực Công Ty và
+/// nút đổi xe, mọi dữ liệu Công Ty cho vào nút Công Ty
 /// mới"): xoá hẳn thanh ngang cũ (#vehicleScopeBar, ẩn Đổi Xe khỏi mọi
 /// màn hình) — dồn 2 chức năng của nó vào ĐÚNG sơ đồ cây này: (1) bấm
-/// nút gốc 🏢 LINH CHÍ THÀNH → mở Dự Án Đầu Tư Xe (y hệt hành vi cũ của
+/// nút gốc 🏢 CÔNG TY → mở Dự Án Đầu Tư Xe (y hệt hành vi cũ của
 /// thanh ngang), (2) "+ Thêm Xe"/xoá xe (trước đây nằm trong modal Đổi
 /// Xe, giờ modal đó không còn lối vào nào khác) → đưa thẳng xuống cuối
 /// sơ đồ, không mất chức năng nào.
@@ -10434,7 +10438,7 @@ function renderChooseVehiclePrompt(){
     // (session đang mở), bộ nhớ dùng chung cho xe đó có thể chưa từng
     // được nạp — Kế Toán Nội Bộ khi đó tính thiếu đúng xe mới, dù dữ liệu
     // đã lưu đúng trên Firestore. Sửa TẬN GỐC, không cần đoán thêm: mỗi
-    // lần bấm vào Linh Chí Thành, tải lại MỚI HOÀN TOÀN dữ liệu mọi xe từ
+    // lần bấm vào Công Ty, tải lại MỚI HOÀN TOÀN dữ liệu mọi xe từ
     // Firestore trước khi vẽ trang — đảm bảo luôn đúng 100% bất kể xe mới
     // được thêm lúc nào trong phiên đang mở.
     showToast('Đang cập nhật dữ liệu mọi xe...');
@@ -12241,6 +12245,10 @@ async function saveDraftShift(){
     showToast('Ca này có dầu tiêu hao nhưng chưa nhập Đơn giá dầu/lít — nhập đơn giá thực tế trước khi lưu (nếu không tổng tiền dầu của kỳ sẽ bị tính thiếu).');
     return;
   }
+  // SỬA 2026-11-27 (rà 100 tình huống): hỏi lại khi trùng ca hoặc ngày tương lai — chỉ hỏi, không chặn.
+  { const _dup = state.shifts.find(s=>s.id!==sh.id && s.date===sh.date && s.shiftType===sh.shiftType && s.driverId===sh.driverId);
+    if(_dup && !confirm(`Tài xế này đã có 1 ${sh.shiftType==='night'?'Ca Đêm':'Ca Ngày'} ngày ${formatDateVN(sh.date)} rồi. ${ownerTitle()} có chắc muốn lưu thêm 1 ca nữa (không phải nhập trùng)?`)) return;
+    if(sh.date > todayLocalDateStr() && !confirm(`Ca này đề ngày ${formatDateVN(sh.date)} — là ngày trong tương lai. ${ownerTitle()} có chắc đúng ngày?`)) return; }
   const idx = state.shifts.findIndex(s=>s.id===sh.id);
   const cleanShift = JSON.parse(JSON.stringify(sh));
   delete cleanShift.isNew;
@@ -12274,7 +12282,7 @@ async function saveDraftShift(){
 function renderDrivers(){
   // SỬA (Ông Chủ yêu cầu — tài xế dùng CHUNG cả công ty): bỏ hẳn yêu cầu
   // "phải chọn đúng 1 xe trước" — trước đây renderChooseVehiclePrompt()
-  // hiện ra chặn màn này khi đang ở "🏢 Linh Chí Thành" với ≥2 xe, vì
+  // hiện ra chặn màn này khi đang ở "🏢 Công Ty" với ≥2 xe, vì
   // drivers từng là dữ liệu riêng theo xe. Giờ drivers là 1 sổ DUY NHẤT
   // của cả công ty nên không còn lý do phải hỏi "xem xe nào" nữa — mở tab
   // Tài Xế là thấy ngay đủ danh sách, bất kể đang đứng ở xe nào.
@@ -12386,6 +12394,8 @@ function renderDrivers(){
   document.getElementById('addDriverBtn').addEventListener('click', async ()=>{
     const name = document.getElementById('nd_name').value.trim();
     if(!name){ showToast('Nhập tên tài xế trước.'); return; }
+    if(state.drivers.some(d=>String(d.name||'').trim().toLowerCase()===name.toLowerCase())
+       && !confirm(`Đã có tài xế tên "${name}". Trùng tên dễ chọn nhầm người khi nhập ca — ${ownerTitle()} vẫn muốn thêm? (nên thêm chữ phân biệt, VD "${name} 2")`)) return;
     const driver = {
       id: uid('driver'),
       name,
@@ -15373,7 +15383,7 @@ function renderProjectAppraisal(preserveScroll){
   // trước). Lần trước đã sửa cho dispatcher renderAll() biết ĐỌC đúng
   // state.strategyView để quay lại đúng sub-màn — nhưng hàm này lại GHI
   // state.strategyView='appraisal' SAU dòng chặn "chưa chọn xe cụ thể" ở
-  // dưới. Nghĩa là mỗi lần bị chặn (đang ở "Linh Chí Thành", chưa chọn xe)
+  // dưới. Nghĩa là mỗi lần bị chặn (đang ở "Công Ty", chưa chọn xe)
   // hàm return NGAY, strategyView KHÔNG BAO GIỜ được ghi thành 'appraisal'
   // — vẫn giữ nguyên giá trị cũ ('hub', từ lúc đang đứng ở Trợ Lý gốc).
   // Chọn xe xong, dispatcher đọc đúng strategyView (đã sửa lần trước) —
@@ -17767,7 +17777,7 @@ function partnerTransactionTableHtml(partnerId, side, from, to){
   // (invoiceEffective = sellHasInvoice/buyIsDeductible) được tick — TUYỆT
   // ĐỐI KHÔNG suy từ priceIncludesVat nữa, vì 2 việc này khác nhau: DVG
   // luôn nhập giá đã gồm VAT nhưng THỰC TẾ giữ lại 20% tiền, chỉ thanh toán
-  // nốt khi Linh Chí Thành xuất đủ hoá đơn — nên "giá đã gồm VAT" KHÔNG
+  // nốt khi Công Ty xuất đủ hoá đơn — nên "giá đã gồm VAT" KHÔNG
   // đồng nghĩa "đã có hoá đơn". Vẫn giữ 3 trạng thái rõ ràng, không mất
   // thông tin VAT có đang thực áp dụng cho chuyến đó hay không.
   const invoiceBadge = g=>{
@@ -17980,7 +17990,7 @@ function computePeriodSummary(from, to){
   // đúng 1 lần duy nhất. Đây CHÍNH XÁC là lý do xe mới tinh (0 ca, 0
   // doanh thu) vẫn hiện lỗ — nó "gánh" luôn phần Nhà/Điện/Cầu Đường của
   // CẢ CÔNG TY dù chưa hề vận hành ngày nào. Sửa đúng: chỉ cộng 3 khoản
-  // này khi đang xem TOÀN CÔNG TY (LINH CHÍ THÀNH, currentVehicleId=
+  // này khi đang xem TOÀN CÔNG TY (CÔNG TY, currentVehicleId=
   // null) — khi xem riêng 1 xe, 3 khoản này = 0 (đã có "Kết Quả Từng Xe"/
   // computeVehicleAccrualProfit() xử lý đúng từ trước, chỉ riêng hàm
   // computePeriodSummary() này bị sót).
@@ -18019,7 +18029,7 @@ function computePeriodSummary(from, to){
   // ĐƯỢC LỖI THẬT — `otherFixedMonthly` (dùng cho LỢI NHUẬN THỰC TẾ) trước
   // đây LUÔN đọc `state.settings` (đúng 1 xe đang cache trong bộ nhớ),
   // KHÔNG hề kiểm tra isCompanyWide như houseRent/utilities/tollFee đã
-  // sửa ở trên — nghĩa là khi xem TOÀN CÔNG TY (LINH CHÍ THÀNH) với ≥2
+  // sửa ở trên — nghĩa là khi xem TOÀN CÔNG TY (CÔNG TY) với ≥2
   // xe, Khấu Hao/Lãi Vay/Bảo Hiểm/Đăng Kiểm chỉ tính cho ĐÚNG 1 xe, bỏ
   // sót hoàn toàn xe còn lại — Lợi Nhuận Thực Tế cấp công ty bị TÍNH THIẾU
   // chi phí. Sửa: khi isCompanyWide, dùng companyWideAccrualFixedMonthly()
@@ -18268,7 +18278,7 @@ function generateInsights({gDay, gNight, gTotal, finalNetProfit, repairTotal, ro
 function renderResults(){
   // SỬA 2026-09-08 (audit đa xe, yêu cầu Ông Chủ): thêm đúng lá chắn y
   // hệt renderShiftList()/renderDrivers() đã có sẵn — trước đây tab này
-  // THIẾU chặn, nên khi có ≥2 xe và đang ở "LINH CHÍ THÀNH" (chưa chọn xe
+  // THIẾU chặn, nên khi có ≥2 xe và đang ở "CÔNG TY" (chưa chọn xe
   // cụ thể), tab sẽ âm thầm hiện lại dữ liệu CŨ (xe vừa xem trước đó) mà
   // không báo gì. Với Ông Chủ hiện tại (đúng 1 xe), activeVehicleIdForEditing()
   // LUÔN trả về đúng xe đó (xem chú thích hàm này) — lá chắn này không
@@ -18362,7 +18372,7 @@ function renderResults(){
   const cashIn = periodSummary.cashIn;
   const cashOutToSuppliers = periodSummary.cashOutToSuppliers;
   const operatingCashCost = periodSummary.operatingCashCost;
-  // Ở chế độ LINH CHÍ THÀNH, dùng thẳng số đã tính company-wide từ
+  // Ở chế độ CÔNG TY, dùng thẳng số đã tính company-wide từ
   // periodSummary (ô ghi đè "Chi phí luật đường trong kỳ này" bên dưới là
   // của riêng xe đang xem, không áp dụng cho tổng công ty).
   const netOperatingCashFlow = periodSummary.isCompanyWide
@@ -18785,11 +18795,16 @@ ${Math.abs(Number(gTotal.materialCost)||0)>0.5 ? `<tr><td>− Giá vốn hàng m
     state.resultsRange = { from: toLocalISO(first), to: toLocalISO(last) };
     state.resultsRoadFeeOverride=null; renderResults();
   });
+  // SỬA 2026-11-27: chọn "Từ ngày" sau "Đến ngày" từng ra toàn 0đ không báo gì — giờ tự đảo lại và báo.
+  const _fixResultsRangeOrder = ()=>{
+    const r = state.resultsRange;
+    if(r.from && r.to && r.from > r.to){ const t = r.from; r.from = r.to; r.to = t; setTimeout(()=>showToast(`"Từ ngày" đang sau "Đến ngày" — app đã tự đảo lại cho ${ownerTitle()}.`), 50); }
+  };
   document.getElementById('res_from').addEventListener('change', e=>{
-    state.resultsRange.from = e.target.value; state.resultsRoadFeeOverride=null; renderResults();
+    state.resultsRange.from = e.target.value; _fixResultsRangeOrder(); state.resultsRoadFeeOverride=null; renderResults();
   });
   document.getElementById('res_to').addEventListener('change', e=>{
-    state.resultsRange.to = e.target.value; state.resultsRoadFeeOverride=null; renderResults();
+    state.resultsRange.to = e.target.value; _fixResultsRangeOrder(); state.resultsRoadFeeOverride=null; renderResults();
   });
   document.getElementById('addRepairBtn').addEventListener('click', ()=>openRepairEditor(null));
   { const vb = document.getElementById('vatCompanyDetailBtn'); if(vb) vb.addEventListener('click', ()=>{ saveMainScroll(); renderCompanyVatDetailPage(()=>{ renderAll(); restoreMainScroll(); }); }); }
@@ -19735,8 +19750,8 @@ function renderPartnersFullDetailPage(preserveScroll){
     </section>` : ''}
   `;
   document.getElementById('partnersFullDetailBackBtn').addEventListener('click', ()=>{
-    // SỬA 2026-09-20 (rà tiếp cùng đợt chuyển Công Nợ vào Linh Chí Thành):
-    // renderAll() một mình không giữ đúng vị trí cuộn của Linh Chí Thành
+    // SỬA 2026-09-20 (rà tiếp cùng đợt chuyển Công Nợ vào Công Ty):
+    // renderAll() một mình không giữ đúng vị trí cuộn của Công Ty
     // khi quay lại (renderCompanyDashboardPage() bên trong nó luôn tự
     // cuộn về đầu) — gọi thẳng, đúng cờ preserveScroll, y hệt các nút
     // Quay Lại khác đã sửa.
@@ -20058,7 +20073,7 @@ function openSitePaymentEditor(id, siteName, from, to, partnerName){
 
 // ---- Documents (vehicle + driver paperwork) list & editor ----
 /// SỬA 2026-09-08 (yêu cầu Ông Chủ — "dữ liệu đã thêm phải hiển thị
-/// trong Linh Chí Thành, kẻ ô sạch đẹp"): đổi từ list "card" rời rạc
+/// trong Công Ty, kẻ ô sạch đẹp"): đổi từ list "card" rời rạc
 /// sang 1 bảng grid-table duy nhất. Hàm này giờ được gọi từ
 /// renderCompanyDashboardPage() (KHÔNG còn gọi từ renderSettings() nữa)
 /// — nút "+ Thêm Giấy Tờ" vẫn nằm ở Cài Đặt như cũ, chỉ có PHẦN HIỂN THỊ
@@ -21138,7 +21153,7 @@ function openLoanEditor(loanId){
   renderLoanRateScheduleList();
   renderLoanPreview();
 }
-/// Danh sách khoản vay ngân hàng hiển thị trong Linh Chí Thành — mỗi
+/// Danh sách khoản vay ngân hàng hiển thị trong Công Ty — mỗi
 /// khoản 1 dòng tóm tắt (dư nợ còn lại, kỳ này, đã trả bao nhiêu kỳ),
 /// cộng 1 dòng TỔNG gộp mọi khoản. Bấm "Sửa" mở lại đúng openLoanEditor().
 /// SỬA 2026-09-08 (yêu cầu Ông Chủ — "cho nút chi tiết cách tính, để tao
@@ -21329,14 +21344,14 @@ function renderLoanList(){
     });
   });
 }
-/// SỬA 2026-09-08 (yêu cầu Ông Chủ — "gọn gàng vào Linh Chí Thành, không
+/// SỬA 2026-09-08 (yêu cầu Ông Chủ — "gọn gàng vào Công Ty, không
 /// cần nút bên Cài Đặt"): modal nhỏ sửa 3 số Chi Phí Cố Định Hàng Tháng
 /// (Khấu hao/Bảo hiểm/Đăng kiểm) — lưu ngay lập tức, KHÔNG còn qua nút
 /// "Lưu Cài Đặt" chung, và KHÔNG còn hiện 3 ô này ở Cài Đặt nữa.
 /// SỬA 2026-09-08 (Ông Chủ phát hiện — "Khớp Số Dư Ngân Hàng chưa biểu
 /// thị hết luồng tiền"): sổ ghi nhận từng lần ĐÃ NỘP THẬT tiền VAT cho
 /// nhà nước — CHUNG CÔNG TY, LUÔN qua ngân hàng (nộp thuế điện tử), dùng
-/// cho Khớp Số Dư Ngân Hàng. Trang riêng, đặt trong Linh Chí Thành.
+/// cho Khớp Số Dư Ngân Hàng. Trang riêng, đặt trong Công Ty.
 function renderVatPaymentListPage(preserveScroll){
   // SỬA 2026-09-20 — cùng lỗi/cách sửa như openCustomerDetail().
   if(!preserveScroll) scrollMainToTop();
@@ -21696,7 +21711,7 @@ function computeDepreciationMonthlyHistory(){
     return { month: ym, amount, cumulative, isPartial: ym===currentMonthStr || idx===0 };
   });
 }
-/// Trang riêng "Chi Tiết Thu Hồi Khấu Hao" — mở từ Linh Chí Thành.
+/// Trang riêng "Chi Tiết Thu Hồi Khấu Hao" — mở từ Công Ty.
 function renderDepreciationDetailPage(){
   scrollMainToTop();
   const app = document.getElementById('app');
@@ -22006,7 +22021,7 @@ function renderBusinessReportPage(from, to, preserveScroll){
 }
 
 /// SỬA 2026-09-08 (yêu cầu Ông Chủ — chuẩn bị thêm xe: "Kết quả trong
-/// Linh Chí Thành lập bảng từng xe, sau đó hiện bảng cộng tổng"): trang
+/// Công Ty lập bảng từng xe, sau đó hiện bảng cộng tổng"): trang
 /// riêng, dùng LẠI NGUYÊN bộ lọc kỳ (Tháng này/Từ đầu dự án/Tuỳ chỉnh)
 /// y hệt Báo Cáo Kinh Doanh Tổng Hợp — mỗi xe 1 bảng riêng (đúng số THẬT
 /// thuộc về xe đó), cuối cùng cộng lại thành 1 bảng TỔNG có cộng thêm
@@ -22173,7 +22188,7 @@ function renderPerVehicleResultsPage(from, to, preserveScroll){
 }
 // SỬA 2026-09-14 (Ông Chủ hoảng tưởng mất dữ liệu — xem chú thích đầy đủ
 // ở renderCompanyDashboardPage()): thông báo dùng chung cho 4 mục gắn
-// riêng theo từng xe, khi đang ở LINH CHÍ THÀNH mà chưa chọn xe nào —
+// riêng theo từng xe, khi đang ở CÔNG TY mà chưa chọn xe nào —
 // liệt kê thẳng từng xe để bấm qua xem ngay tại đây, không cần thoát ra
 // lại màn Chọn Xe.
 function renderPerVehicleDataNotice(){
@@ -22615,9 +22630,9 @@ async function fillVehicleBookWarnings(){
 }
 function renderCompanyDashboardPage(preserveScroll){
   // SỬA 2026-09-20 (rà sâu toàn app theo yêu cầu Ông Chủ — đây là nguồn
-  // gây lỗi NHIỀU NHẤT): hàm này là màn "🏢 Linh Chí Thành" — vốn đúng khi
+  // gây lỗi NHIỀU NHẤT): hàm này là màn "🏢 Công Ty" — vốn đúng khi
   // là ĐIỂM VÀO (từ sơ đồ chọn xe) thì cần scrollMainToTop(). Nhưng RẤT
-  // NHIỀU nút "← Quay Lại" ở các trang con của Linh Chí Thành (ROI, Thuế
+  // NHIỀU nút "← Quay Lại" ở các trang con của Công Ty (ROI, Thuế
   // VAT, Sổ Cái, Lịch Sử Vốn, Công Nợ, Dòng Tiền, Khớp Số Dư Bank, Chi
   // Tiết Vốn Chủ, Vốn Điều Lệ, Kết Quả Toàn Công Ty, Kết Quả Từng Xe...)
   // gọi THẲNG hàm này để "quay lại" — kích hoạt lại đúng dòng reset đó,
@@ -22629,11 +22644,11 @@ function renderCompanyDashboardPage(preserveScroll){
   const charterStatus = computeCharterCapitalStatus();
   const timeline = computeMonthlyEquityTimeline();
   // SỬA 2026-09-14 (Ông Chủ hoảng — tưởng MẤT dữ liệu Khoản Vay/Chi Phí Cố
-  // Định/Giấy Tờ Xe/Bảo Dưỡng khi vào thẳng "LINH CHÍ THÀNH"): xác minh
+  // Định/Giấy Tờ Xe/Bảo Dưỡng khi vào thẳng "CÔNG TY"): xác minh
   // kỹ — dữ liệu KHÔNG hề mất, vẫn nguyên trong Firestore. 4 mục này gắn
   // RIÊNG theo từng xe (state.settings/documents/maintenanceSchedules),
   // chỉ được TẢI vào bộ nhớ khi Ông Chủ bấm trực tiếp vào 1 xe cụ thể ở
-  // màn Chọn Xe (xem switchVehicle() — có ≥2 xe mà đang ở LINH CHÍ THÀNH
+  // màn Chọn Xe (xem switchVehicle() — có ≥2 xe mà đang ở CÔNG TY
   // thì CỐ Ý không tải xe nào, y hệt cách "Ca Làm Việc"/"Tài Xế" đang xử
   // lý). Trước đây khi công ty chỉ có 1 xe, việc này không lộ ra vì luôn
   // tự đúng — giờ có xe thứ 2, nếu vào thẳng trang này mà CHƯA bấm qua xe
@@ -22754,7 +22769,7 @@ function renderCompanyDashboardPage(preserveScroll){
       <button class="btn btn-ghost btn-block sx-removed" id="vehicleMgmtTopBtn" style="margin-bottom:14px; border:1.5px solid var(--accent);">🛠️ Quản Lý Xe — sở hữu · tiền đầu tư · khấu hao · khoản vay · thuê</button>
 
       ${(()=>{
-        // #350 — bảng tổng hợp từng xe (tháng này): LINH CHÍ THÀNH là tổng chứa, mỗi xe 1 dòng số riêng.
+        // #350 — bảng tổng hợp từng xe (tháng này): CÔNG TY là tổng chứa, mỗi xe 1 dòng số riêng.
         // Chỉ hiển thị — dùng lại computeVehicleAccrualProfit() của trang "Kết Quả Từng Xe".
         if(!(state.vehicles||[]).length) return '';
         const mr = currentMonthRange();
@@ -23930,7 +23945,7 @@ function renderCompanyCashFlowLedgerPage(){
 /// sẵn (openCustomerDetail/openSupplierDetail — không viết lại logic).
 /// SỬA 2026-09-08 (yêu cầu Ông Chủ — "thay vì hiển thị cả loạt thì cho 1
 /// nút chi tiết, bảng kẻ ô"): trang riêng liệt kê TOÀN BỘ Lịch Sử Góp/Rút
-/// — trước đây hiện thẳng từng khoản ngay trên Linh Chí Thành (rất dài
+/// — trước đây hiện thẳng từng khoản ngay trên Công Ty (rất dài
 /// khi nhiều khoản), giờ chỉ còn 1 dòng tóm tắt + nút mở trang này.
 /// Bản 2.0 — form gọn ghi 1 khoản Góp vào / Rút ra của Ông Chủ (thay form cũ đã bỏ ở bản 1.3).
 /// Ghi vào đúng sổ ownerEquityEntries mà đối chiếu số dư TK Doanh Nghiệp / Tiền Mặt đang đọc.
@@ -25205,7 +25220,7 @@ function renderSettings(){
   // phát hiện được): thiếu lá chắn này là lỗ hổng nguy hiểm nhất trong
   // đợt audit — vehicleDataRef(null,'settings') tự quy về ĐÚNG PATH GỐC
   // của Xe #1 (xem chú thích vehicleDataRef()), nên nếu có ≥2 xe, đang ở
-  // "LINH CHÍ THÀNH", mà lỡ vào được màn này rồi bấm Lưu — sẽ ghi đè
+  // "CÔNG TY", mà lỡ vào được màn này rồi bấm Lưu — sẽ ghi đè
   // THẲNG vào dữ liệu Cài Đặt THẬT của Xe #1 (29E-691.12). Thêm đúng lá
   // chắn y hệt renderShiftList()/renderDrivers() để chặn từ gốc. Với Ông
   // Chủ hiện tại (đúng 1 xe), activeVehicleIdForEditing() LUÔN trả về
@@ -25383,12 +25398,12 @@ function renderSettings(){
   `;
 
   // SỬA 2026-09-08 (yêu cầu Ông Chủ — "toàn bộ khoản vay ngân hàng là
-  // phần tài chính công ty, chuyển hẳn vào Linh Chí Thành, không phải cài
+  // phần tài chính công ty, chuyển hẳn vào Công Ty, không phải cài
   // đặt"): nút "Thêm Khoản Vay Mới" đã CHUYỂN HẲN sang renderCompanyDashboardPage()
   // — Cài Đặt không còn dấu vết gì của mục này nữa.
 
   // SỬA 2026-09-08 (yêu cầu Ông Chủ — "nút thêm ở Cài Đặt, dữ liệu hiển
-  // thị ở Linh Chí Thành"): Tiền Luật Đường / Tiền Thuê Nhà & Điện Nước /
+  // thị ở Công Ty"): Tiền Luật Đường / Tiền Thuê Nhà & Điện Nước /
   // CP Cầu Đường Theo Tháng KHÔNG còn gộp chung vào nút "Lưu Cài Đặt" nữa
   // — mỗi tháng giờ tự lưu ngay lập tức qua modal riêng (openMonthlyAmountEditor()/
   // openHousingUtilEditor()), y hệt cơ chế Giấy Tờ Xe/Bảo Dưỡng đã làm an
@@ -25429,8 +25444,13 @@ function renderSettings(){
   }));
 
   document.getElementById('saveTaxRatesBtn').addEventListener('click', async ()=>{
-    state.settings.vatRatePercent = Number(document.getElementById('tax_vatRate').value)||0;
-    state.settings.citRatePercent = Number(document.getElementById('tax_citRate').value)||0;
+    // SỬA 2026-11-27 (rà 100 tình huống): ô để trống / gõ nhầm từng bị lưu thành 0% mà vẫn báo "Đã lưu".
+    const _rateOf = id => { const raw = String(document.getElementById(id).value||'').trim().replace(/\s/g,'').replace(',','.'); return raw==='' ? NaN : Number(raw); };
+    const _vat = _rateOf('tax_vatRate'), _cit = _rateOf('tax_citRate');
+    if(!isFinite(_vat) || _vat<=0 || _vat>100){ showToast(`Thuế suất VAT chưa hợp lệ — ${ownerTitle()} nhập số từ 1 đến 100 (VD 8 hoặc 10). Chưa lưu.`); return; }
+    if(!isFinite(_cit) || _cit<0 || _cit>100){ showToast(`Thuế suất TNDN chưa hợp lệ — ${ownerTitle()} nhập số từ 0 đến 100 (VD 20). Chưa lưu.`); return; }
+    state.settings.vatRatePercent = _vat;
+    state.settings.citRatePercent = _cit;
     if(!(await saveTaxRates())) return;
     renderAll();
     showToast('Đã lưu Thuế Suất.');
@@ -26257,9 +26277,9 @@ function ktBuildTongQuan(wb, S, companyName, mst){
   // xem còn chỗ nào lỗi/trùng lặp"): BẮT ĐƯỢC lỗi Y HỆT lỗi UI vừa sửa ở
   // renderResults() — khối "Dòng Tiền Thuần" trộn cashIn/cashOutToSuppliers
   // (tiền khách/mỏ, CHỈ đúng khi cộng dồn TOÀN CÔNG TY) với chi phí của
-  // RIÊNG 1 xe khi xuất Excel không phải ở chế độ Linh Chí Thành — ra số
+  // RIÊNG 1 xe khi xuất Excel không phải ở chế độ Công Ty — ra số
   // sai, gây hiểu nhầm khi đưa cho kế toán thuế. Chỉ xuất khối này khi
-  // đang ở Linh Chí Thành (S.isCompanyWide), y hệt điều kiện UI.
+  // đang ở Công Ty (S.isCompanyWide), y hệt điều kiện UI.
   if(S.isCompanyWide){
     ws.mergeCells(`A${r}:B${r}`); ktCell(ws,`A${r}`,'DÒNG TIỀN THUẦN TỪ HOẠT ĐỘNG KINH DOANH (trực tiếp, toàn công ty)',{bold:true,fill:KT_HEAD_FILL,wrap:true}); setH(30);
     line('Tiền khách bank vào (thật)', S.cashIn, {color:'FF1F7A4D'});
@@ -26972,7 +26992,7 @@ function renderAll(){
       renderDrivers();
     } else if(state.currentTab==='strategy'){
       // SỬA (Ông Chủ báo — bấm vào Thẩm Định Công Trình bị văng ra màn
-      // Chọn Xe rồi về Linh Chí Thành): GỐC RỄ THẬT — dispatcher này TRƯỚC
+      // Chọn Xe rồi về Công Ty): GỐC RỄ THẬT — dispatcher này TRƯỚC
       // ĐÂY luôn gọi thẳng renderStrategyHub() bất kể đang đứng ở sub-màn
       // nào bên trong tab Trợ Lý, bỏ qua hẳn state.strategyView (biến đã
       // có sẵn, đúng mục đích để nhớ sub-màn hiện tại). Bất kỳ lượt gọi
